@@ -14,6 +14,7 @@
                     prop="parentId">
         <treeselect v-model="formData.parentId"
                     :options="deptOption"
+                    :normalizer="normalizer"
                     placeholder="请选择" />
       </el-form-item>
       <el-form-item label="部门名称"
@@ -141,6 +142,12 @@ export default {
           })
         }
       })
+    },
+    normalizer (node) {
+      //去掉children=null的属性
+      if (node.children === null || node.children === undefined) {
+        delete node.children
+      }
     }
   }
 }

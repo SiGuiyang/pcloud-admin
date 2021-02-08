@@ -41,7 +41,7 @@
             </el-dropdown-item>
           </router-link>
           <a target="_blank"
-             href="https://github.com/SiGuiyang/vue-shop-admin/">
+             href="https://github.com/SiGuiyang/pcloud-admin/">
             <el-dropdown-item>
               项目地址
             </el-dropdown-item>

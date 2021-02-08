@@ -38,6 +38,7 @@
                         prop="parentId">
             <treeselect v-model="formData.parentId"
                         :options="menus"
+                        :normalizer="normalizer"
                         placeholder="请选择" />
           </el-form-item>
         </el-col>
@@ -195,6 +196,12 @@ export default {
           })
         }
       })
+    },
+    normalizer (node) {
+      //去掉children=null的属性
+      if (node.children === null || node.children === undefined) {
+        delete node.children
+      }
     },
     selected (name) {
       this.formData.icon = name

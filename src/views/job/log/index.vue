@@ -71,7 +71,7 @@
       <el-table-column label="调度结果"
                        align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.triggerCode | triggerCodeFilter }}</span>
+          <el-tag :type="scope.row.triggerCode | triggerCodeTagFilter">{{ scope.row.triggerCode | triggerCodeFilter }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="调度备注"
@@ -144,6 +144,13 @@ export default {
       const statusMap = {
         false: 'success',
         true: 'danger'
+      }
+      return statusMap[status]
+    },
+    triggerCodeTagFilter (status) {
+      const statusMap = {
+        200: 'success',
+        500: 'danger'
       }
       return statusMap[status]
     },

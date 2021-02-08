@@ -3,6 +3,7 @@
              :visible.sync="dialogFormVisible"
              :close-on-click-modal="false"
              style="height: 90%"
+             center
              @open="handleOpen">
     <el-container>
       <el-aside class="p-aside">
@@ -30,8 +31,10 @@
     </el-container>
     <div slot="footer"
          class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取消</el-button>
+      <el-button icon="el-icon-circle-close"
+                 @click="dialogFormVisible = false">取消</el-button>
       <el-button type="primary"
+                 icon="el-icon-circle-check"
                  @click="handleSubmit">确认</el-button>
     </div>
   </el-dialog>

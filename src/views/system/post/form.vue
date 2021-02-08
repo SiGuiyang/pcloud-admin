@@ -71,8 +71,6 @@ export default {
       })
     },
     loadPostOption ({ action, parentNode, callback }) {
-      console.log(action === 'LOAD_CHILDREN_OPTIONS')
-      console.log(parentNode)
       postPostList({ parentId: parentNode.id }).then(response => {
         parentNode.children = response.data
         callback()

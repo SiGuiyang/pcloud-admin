@@ -75,6 +75,7 @@
           <el-button type="danger"
                      size="small"
                      icon="el-icon-delete"
+                     :disabled="scope.row.roleCode === 'ROLE_SUPER_ADMIN'"
                      @click="handleDelete(scope.row.id)">删除
           </el-button>
           <el-button :disabled="scope.row.roleCode === 'ROLE_SUPER_ADMIN' || scope.row.roleCode === 'ROLE_ADMIN'"
