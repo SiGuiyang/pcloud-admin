@@ -6,8 +6,9 @@
                 style="width: 200px;"
                 class="filter-item"
                 @keyup.enter.native="handleFilter" />
-      <el-date-picker v-model="listQuery.gmtCreatedDate"
+      <el-date-picker v-model="listQuery.visitDate"
                       type="date"
+                      value-format="yyyy-MM-dd"
                       placeholder="访问时间"
                       class="filter-item">
       </el-date-picker>
@@ -116,7 +117,7 @@ export default {
         page: 1,
         pageSize: 10,
         name: undefined,
-        gmtCreatedDate: undefined
+        visitDate: undefined
       },
       jsonValue: ''
     }
@@ -140,9 +141,9 @@ export default {
     },
     handleFilter () {
       this.listQuery.page = 1
-      if (this.listQuery.gmtCreatedDate === undefined ||
-        this.listQuery.gmtCreatedDate === '' ||
-        this.listQuery.gmtCreatedDate === null) {
+      if (this.listQuery.visitDate === undefined ||
+        this.listQuery.visitDate === '' ||
+        this.listQuery.visitDate === null) {
         this.$message.error('搜索访问时间不能为空')
         return
       }

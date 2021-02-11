@@ -95,7 +95,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作"
-                       width="180"
+                       width="220"
                        fixed="right"
                        class-name="small-padding fixed-width"
                        align="center">
