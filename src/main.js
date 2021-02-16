@@ -19,7 +19,9 @@ import './errorLog' // error log
 import './permission' // permission control
 
 import * as filters from './filters' // global filters
+import VueClipboard from 'vue-clipboard2'
 
+Vue.use(VueClipboard)
 Vue.use(Vue2OrgTree)
 
 Vue.use(Element, {

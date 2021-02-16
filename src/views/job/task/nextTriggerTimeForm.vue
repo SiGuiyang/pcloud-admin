@@ -2,6 +2,7 @@
   <el-dialog title="下次执行时间"
              :visible.sync="dialogFormVisible"
              :close-on-click-modal="false"
+             width="60%"
              center>
     <el-table :data="list"
               stripe

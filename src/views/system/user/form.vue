@@ -2,6 +2,7 @@
   <el-dialog :title="textMap[dialogStatus]"
              :visible.sync="dialogFormVisible"
              :close-on-click-modal="false"
+             width="60%"
              center
              @open="handleOpen">
     <el-form ref="dataForm"
@@ -53,6 +54,7 @@
       <el-button icon="el-icon-circle-close"
                  @click="dialogFormVisible = false">取消</el-button>
       <el-button type="primary"
+                 :loading="confirmLoading"
                  icon="el-icon-circle-check"
                  @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
     </div>
@@ -81,6 +83,7 @@ export default {
       dialogFormVisible: false,
       dialogPvVisible: false,
       passwordVisiable: false,
+      confirmLoading: false,
       dialogStatus: 'create',
       textMap: {
         update: '编辑',
@@ -92,7 +95,8 @@ export default {
         phone: [{ required: true, message: '手机号码不能为空', trigger: 'blur' }],
         name: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
         password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
-        roleIds: [{ required: true, message: '角色不能为空', trigger: 'blur' }]
+        roleIds: [{ required: true, message: '角色不能为空', trigger: 'blur' }],
+        avatar: [{ required: true, message: '头像不能为空', trigger: 'blur' }]
       }
     }
   },
@@ -107,11 +111,13 @@ export default {
     createData () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.confirmLoading = true
           this.formData.gmtCreatedName = this.$store.state.user.username
           this.formData.gmtModifiedName = this.$store.state.user.username
           this.formData.loginCode = this.formData.username
           postCreate(this.formData).then(() => {
             this.dialogFormVisible = false
+            this.confirmLoading = false
             this.$message({
               message: '创建成功',
               type: 'success'
@@ -125,10 +131,12 @@ export default {
     updateData () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.confirmLoading = true
           const formDataData = Object.assign({}, this.formData)
           formDataData.gmtModifiedName = this.$store.state.user.username
           putModify(formDataData).then(() => {
             this.dialogFormVisible = false
+            this.confirmLoading = false
             this.$message({
               message: '更新成功',
               type: 'success'

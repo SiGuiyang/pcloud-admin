@@ -26,3 +26,14 @@ export function putModify (data) {
     data
   })
 }
+
+/**
+ * 强踢下线
+ * @param {*} id 
+ */
+export function postUserOffline (id) {
+  return service({
+    url: `/admin/system/user/${id}/offline`,
+    method: 'get'
+  })
+}

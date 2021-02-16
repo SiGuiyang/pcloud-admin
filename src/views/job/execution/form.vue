@@ -2,6 +2,7 @@
   <el-dialog title="执行器"
              :visible.sync="dialogFormVisible"
              :close-on-click-modal="false"
+             width="60%"
              center
              @open="handleOpen">
     <el-form ref="dataForm"
@@ -36,9 +37,11 @@
     </el-form>
     <div slot="footer"
          class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取消</el-button>
+      <el-button icon="el-icon-circle-close"
+                 @click="dialogFormVisible = false">取消</el-button>
       <el-button type="primary"
-                 @click="dialogStatus==='create'?handleCreateData():handleUpdateData()">确认</el-button>
+                 icon="el-icon-circle-check"
+                 @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
     </div>
   </el-dialog>
 </template>
@@ -74,7 +77,7 @@ export default {
   methods: {
     handleOpen () {
     },
-    handleCreateData () {
+    createData () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           postJobgroupSave(this.formData).then(() => {
@@ -88,7 +91,7 @@ export default {
         }
       })
     },
-    handleUpdateData () {
+    updateData () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const formDataData = Object.assign({}, this.formData)

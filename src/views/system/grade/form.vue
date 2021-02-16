@@ -2,6 +2,7 @@
   <el-dialog :title="textMap[dialogStatus]"
              :visible.sync="dialogFormVisible"
              :close-on-click-modal="false"
+             width="60%"
              center
              @open="handleOpen">
     <el-form ref="dataForm"
@@ -21,6 +22,7 @@
       <el-button icon="el-icon-circle-close"
                  @click="dialogFormVisible = false">取消</el-button>
       <el-button type="primary"
+                 :loading="confirmLoading"
                  icon="el-icon-circle-check"
                  @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
     </div>
@@ -40,6 +42,7 @@ export default {
   data () {
     return {
       dialogFormVisible: false,
+      confirmLoading: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -61,10 +64,12 @@ export default {
     createData () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.confirmLoading = true
           this.formData.gmtCreatedName = this.$store.state.user.username
           this.formData.gmtModifiedName = this.$store.state.user.username
           postGradeCreate(this.formData).then(() => {
             this.dialogFormVisible = false
+            this.confirmLoading = false
             this.$message({
               message: '创建成功',
               type: 'success'
@@ -78,10 +83,12 @@ export default {
     updateData () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.confirmLoading = true
           const tempData = Object.assign({}, this.formData)
           tempData.gmtModifiedName = this.$store.state.user.username
           putGradeModify(tempData).then(() => {
             this.dialogFormVisible = false
+            this.confirmLoading = false
             this.$message({
               message: '更新成功',
               type: 'success'

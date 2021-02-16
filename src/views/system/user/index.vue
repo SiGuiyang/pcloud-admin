@@ -48,25 +48,38 @@
       <el-table-column type="selection"
                        width="55">
       </el-table-column>
+      <el-table-column>
+        <template slot-scope="scope">
+          <el-avatar :size="60"
+                     src="https://empty"
+                     @error="errorHandler">
+            <img :src="scope.row.avatar" />
+          </el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column label="手机号码"
+                       width="200"
                        align="left">
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
       <el-table-column label="姓名"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="拥有角色"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
           <span>{{ getRoles(scope.row) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.state | statusFilter">
@@ -75,6 +88,7 @@
         </template>
       </el-table-column>
       <el-table-column label="Online状态"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.online | statusFilter">
@@ -83,12 +97,14 @@
         </template>
       </el-table-column>
       <el-table-column label="操作人"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.gmtModifiedName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="更新时间"
+                       width="220"
                        align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.gmtModifiedDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
@@ -120,6 +136,13 @@
                      @click="handleStatus(scope.row, true)">
             禁用
           </el-button>
+          <el-button v-if="!scope.row.online && scope.row.phone !== phone"
+                     type="warning"
+                     size="small"
+                     icon="el-icon-circle-check"
+                     @click="handleOffline(scope.row.id)">
+            强踢
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -135,7 +158,8 @@
 </template>
 
 <script>
-import { postUserList, putModify } from '@/api/sysuser'
+import { mapGetters } from 'vuex'
+import { postUserList, putModify, postUserOffline } from '@/api/sysuser'
 import { commonDownload } from '@/utils/download'
 import waves from '@/directive/waves' // Waves directive
 import permission from '@/directive/permission'
@@ -180,6 +204,11 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'phone'
+    ])
+  },
   // 初始化
   created () {
     this.getUserList()
@@ -192,6 +221,9 @@ export default {
     // 多选中行
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    errorHandler () {
+      return true
     },
     // 列表
     getUserList () {
@@ -280,6 +312,16 @@ export default {
       } else {
         this.$message.error('请至少选择一条记录')
       }
+    },
+    // 强踢下线
+    handleOffline (id) {
+      postUserOffline(id).then(() => {
+        this.$message({
+          message: '下线成功',
+          type: 'success'
+        })
+        this.getUserList()
+      })
     }
   }
 }
