@@ -117,7 +117,9 @@ export default {
         return
       }
       const _this = this.$refs['dataForm']
-      _this.ossType = type
+      _this.listQuery = {}
+      _this.listQuery.ossType = type
+      _this.listQuery.maxKey = 1000
       _this.dialogFormVisible = true
     }
   }
