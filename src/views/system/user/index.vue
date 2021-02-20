@@ -229,12 +229,9 @@ export default {
     getUserList () {
       this.listLoading = true
       postUserList(this.listQuery).then(response => {
-        this.list = response.data
-        this.total = response.total
-        this.list.forEach(k => {
-          this.roleIds = JSON.parse(k.roleIds)
-        })
         setTimeout(() => {
+          this.list = response.data
+          this.total = response.total
           this.listLoading = false
         }, 3 * 1000)
       }).catch(() => {
@@ -244,7 +241,7 @@ export default {
     // 拥有的角色
     getRoles (row) {
       let content = ''
-      if (row.roles !== null) {
+      if (row.roles) {
         for (let i = 0; i < row.roles.length; i++) {
           content += row.roles[i].name + '|'
         }

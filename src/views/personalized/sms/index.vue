@@ -130,10 +130,9 @@ export default {
     getSmsList () {
       this.listLoading = true
       postSmsPage(this.listQuery).then(response => {
-        this.list = response.data
-        this.listLoading = false
-        this.total = response.total
         setTimeout(() => {
+          this.list = response.data
+          this.total = response.total
           this.listLoading = false
         }, 3 * 1000)
       }).catch(() => {

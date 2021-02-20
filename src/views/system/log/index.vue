@@ -129,10 +129,9 @@ export default {
     getLogList () {
       this.listLoading = true
       fetchLogList(this.listQuery).then(response => {
-        this.list = response.data
-        this.total = response.total
-
         setTimeout(() => {
+          this.list = response.data
+          this.total = response.total
           this.listLoading = false
         }, 3 * 1000)
       }).catch(() => {

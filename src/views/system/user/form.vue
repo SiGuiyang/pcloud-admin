@@ -103,8 +103,10 @@ export default {
   methods: {
     // 弹框初始化
     handleOpen () {
-      postRoleList({}).then(response => { // 获取角色列表
-        this.roles = response.data
+      this.$nextTick(() => {
+        postRoleList({}).then(response => { // 获取角色列表
+          this.roles = response.data
+        })
       })
     },
     // 创建
