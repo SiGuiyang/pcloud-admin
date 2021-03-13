@@ -7,6 +7,21 @@
                 style="width: 200px;"
                 class="filter-item"
                 @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.roleIds"
+                 filterable
+                 remote
+                 reserve-keyword
+                 clearable
+                 placeholder="请输入角色名称"
+                 :remote-method="remoteMethod"
+                 :loading="loading"
+                 class="filter-item">
+        <el-option v-for="item in roleOption"
+                   :key="item.id"
+                   :label="item.name"
+                   :value="item.id">
+        </el-option>
+      </el-select>
       <el-button v-waves
                  class="filter-item"
                  type="primary"
@@ -48,7 +63,7 @@
       <el-table-column type="selection"
                        width="55">
       </el-table-column>
-      <el-table-column>
+      <el-table-column label="头像">
         <template slot-scope="scope">
           <el-avatar :size="60"
                      src="https://empty"
@@ -59,7 +74,7 @@
       </el-table-column>
       <el-table-column label="手机号码"
                        width="200"
-                       align="left">
+                       align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
@@ -160,6 +175,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { postUserList, putModify, postUserOffline } from '@/api/sysuser'
+import { fetchRoleList } from '@/api/role'
 import { commonDownload } from '@/utils/download'
 import waves from '@/directive/waves' // Waves directive
 import permission from '@/directive/permission'
@@ -185,13 +201,16 @@ export default {
       downloadLoading: false,
       total: 0,
       listLoading: true,
+      loading: false,
       listQuery: {
         page: 1,
         pageSize: 10,
-        phone: undefined
+        phone: undefined,
+        roleIds: undefined
       },
       tableSelectData: {},
       multipleSelection: [],
+      roleOption: [],
       formData: {
         avatar: undefined,
         deleteStatus: false,
@@ -229,11 +248,9 @@ export default {
     getUserList () {
       this.listLoading = true
       postUserList(this.listQuery).then(response => {
-        setTimeout(() => {
-          this.list = response.data
-          this.total = response.total
-          this.listLoading = false
-        }, 3 * 1000)
+        this.list = response.data
+        this.total = response.total
+        this.listLoading = false
       }).catch(() => {
         this.listLoading = false
       })
@@ -247,6 +264,18 @@ export default {
         }
       }
       return content
+    },
+    // 下拉角色检索
+    remoteMethod (keyword) {
+      this.loading = true
+      fetchRoleList({ pageNo: 1, pageSize: 20, name: keyword }).then(response => {
+        this.roleOption = response.data
+        setTimeout(() => {
+          this.loading = false
+        }, 1.5 * 1000)
+      }).catch(() => {
+        this.loading = false
+      })
     },
     // 查询列表
     handleFilter () {

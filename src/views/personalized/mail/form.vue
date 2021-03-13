@@ -11,15 +11,25 @@
              label-position="top"
              label-width="100px"
              width="50%">
-      <el-form-item label="角色名称"
+      <el-form-item label="名称"
                     prop="name">
         <el-input v-model="formData.name"
                   placeholder="请设置" />
       </el-form-item>
-      <el-form-item label="角色编码"
-                    prop="roleCode">
-        <el-input v-model="formData.roleCode"
-                  :disabled="roleCodeDisabled"
+      <el-form-item label="收信人"
+                    prop="phone">
+        <el-select style="width: 100%">
+          <el-option v-for="user in userOption"
+                     :key="user.phone"
+                     :value="user.phone"
+                     :label="user.name" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="内容"
+                    prop="description">
+        <el-input v-model="formData.description"
+                  type="textarea"
                   placeholder="请设置" />
       </el-form-item>
     </el-form>
@@ -36,8 +46,7 @@
 </template>
 
 <script>
-import { addRole, modifyRole } from '@/api/role'
-
+import { postGradeCreate, putGradeModify } from '@/api/grade'
 export default {
   name: 'Form',
   props: {
@@ -49,7 +58,6 @@ export default {
   data () {
     return {
       dialogFormVisible: false,
-      roleCodeDisabled: false,
       confirmLoading: false,
       dialogStatus: '',
       textMap: {
@@ -57,13 +65,14 @@ export default {
         create: '新建'
       },
       rules: {
-        name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }],
-        roleCode: [{ required: true, message: '角色编码不能为空', trigger: 'blur' }]
-      }
+        name: [{ required: true, message: '职级名称不能为空', trigger: 'blur' }],
+        description: [{ required: true, message: '内容不能为空', trigger: 'blur' }],
+        phone: [{ required: true, message: '收信人不能为空', trigger: 'blur' }]
+      },
+      userOption: []
     }
   },
   methods: {
-    // 弹框初始化
     handleOpen () {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -76,14 +85,14 @@ export default {
           this.confirmLoading = true
           this.formData.gmtCreatedName = this.$store.state.user.username
           this.formData.gmtModifiedName = this.$store.state.user.username
-          addRole(this.formData).then(() => {
+          postGradeCreate(this.formData).then(() => {
             this.dialogFormVisible = false
             this.confirmLoading = false
             this.$message({
               message: '创建成功',
               type: 'success'
             })
-            this.$parent.getRoleList()
+            this.$parent.getMailList()
           })
         }
       })
@@ -95,14 +104,14 @@ export default {
           this.confirmLoading = true
           const tempData = Object.assign({}, this.formData)
           tempData.gmtModifiedName = this.$store.state.user.username
-          modifyRole(tempData).then(() => {
+          putGradeModify(tempData).then(() => {
             this.dialogFormVisible = false
             this.confirmLoading = false
             this.$message({
               message: '更新成功',
               type: 'success'
             })
-            this.$parent.getRoleList()
+            this.$parent.getMailList()
           })
         }
       })
@@ -110,6 +119,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

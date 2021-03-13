@@ -3,10 +3,26 @@
     <div class="filter-container">
       <el-input v-model="listQuery.name"
                 clearable
-                placeholder="岗位职级名称"
+                placeholder="名称"
                 style="width: 200px;"
                 class="filter-item"
                 @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.phone"
+                clearable
+                placeholder="收信人账号"
+                style="width: 200px;"
+                class="filter-item"
+                @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.state"
+                 clearable
+                 placeholder="状态"
+                 style="width: 200px;"
+                 class="filter-item">
+        <el-option :value="false"
+                   label="未读" />
+        <el-option :value="true"
+                   label="已读" />
+      </el-select>
       <el-button v-waves
                  class="filter-item"
                  type="primary"
@@ -27,64 +43,87 @@
               fit
               highlight-current-row
               style="width: 100%">
-      <el-table-column label="职级名称"
-                       prop="name"
+      <el-table-column label="头像"
                        align="left">
+        <template slot-scope="scope">
+          <el-avatar :size="60"
+                     src="https://empty"
+                     @error="errorHandler">
+            <img :src="scope.row.avatar" />
+          </el-avatar>
+        </template>
+      </el-table-column>
+      <el-table-column label="收信人"
+                       align="center">
+        <template slot-scope="scope">
+          <el-tag> {{ scope.row.username }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="名称"
+                       align="center">
         <template slot-scope="scope">
           <el-tag> {{ scope.row.name }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间"
-                       width="220"
+      <el-table-column label="状态"
                        align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.gmtModifiedDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+          <el-tag :type="scope.row.state | stateTagFilter">{{ scope.row.state | stateFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作人"
+      <el-table-column label="内容"
                        align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.gmtModifiedName }}</span>
+          <span> {{ scope.row.description }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作"
-                       prop="operation"
                        width="220"
                        align="center"
                        fixed="right">
         <template slot-scope="scope">
-          <el-button size="small"
-                     type="primary"
-                     icon="el-icon-edit"
-                     @click="handleModify(scope.row)">编辑
-          </el-button>
-          <el-button size="small"
-                     type="danger"
+          <el-button type="danger"
                      icon="el-icon-delete"
                      @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination v-show="total>listQuery.pageSize"
                 :total="total"
                 :page.sync="listQuery.page"
                 :limit.sync="listQuery.pageSize"
-                @pagination="getGradeList" />
+                @pagination="getMailList" />
     <i-form ref="dataForm"
             :form-data="formData" />
   </div>
 </template>
 
 <script>
-import { postGradePage, deleteGrade } from '@/api/grade'
+import { postMail, deleteMail } from '@/api/mail'
+
 import IForm from './form'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import waves from '@/directive/waves' // Waves directive
 export default {
   directives: { waves },
   components: { Pagination, IForm },
+  filters: {
+    stateFilter (state) {
+      const stateMap = {
+        false: '未读',
+        true: '已读'
+      }
+      return stateMap[state]
+    },
+    stateTagFilter (state) {
+      const stateMap = {
+        false: 'danger',
+        true: 'success'
+      }
+      return stateMap[state]
+    }
+  },
   data () {
     return {
       list: [],
@@ -93,22 +132,24 @@ export default {
       listQuery: {
         page: 1,
         pageSize: 10,
-        name: undefined
+        name: undefined,
+        phone: undefined,
+        state: undefined
       },
       formData: {}
     }
   },
   created () {
-    this.getGradeList()
+    this.getMailList()
   },
   methods: {
     handleFilter () {
       this.listQuery.page = 1
-      this.getGradeList()
+      this.getMailList()
     },
-    getGradeList () {
+    getMailList () {
       this.listLoading = true
-      postGradePage(this.listQuery).then(response => {
+      postMail(this.listQuery).then(response => {
         this.list = response.data
         this.total = response.total
         this.listLoading = false
@@ -134,12 +175,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteGrade({ id: row.id }).then(() => {
+        deleteMail({ id: row.id }).then(() => {
           this.$message({
             type: 'success',
             message: '删除成功'
           })
-          this.getGradeList()
+          this.getMailList()
         })
       }).catch(() => {
         this.$message({

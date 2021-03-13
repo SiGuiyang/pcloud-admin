@@ -156,12 +156,10 @@ export default {
     getList () {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        setTimeout(() => {
-          this.list = response.data
-          this.menuData = response.data
-          this.total = response.total
-          this.listLoading = false
-        }, 3 * 1000)
+        this.list = response.data
+        this.menuData = response.data
+        this.total = response.total
+        this.listLoading = false
       }).catch(() => {
         this.listLoading = false
       })

@@ -1,8 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name"
-                placeholder="资源名称"
+      <el-input v-model="listQuery.description"
+                clearable
+                placeholder="号段说明"
                 style="width: 200px;"
                 class="filter-item"
                 @keyup.enter.native="handleFilter" />
@@ -10,74 +11,75 @@
                  class="filter-item"
                  type="primary"
                  icon="el-icon-search"
-                 @click="handleFilter">搜索
+                 @click="handleFilter">
+        搜索
       </el-button>
       <el-button class="filter-item"
                  style="margin-left: 10px;"
                  type="primary"
                  icon="el-icon-edit"
-                 @click="handleCreate">新增
+                 @click="handleCreate">
+        新增
       </el-button>
     </div>
-
-    <el-table :key="tableKey"
-              v-loading="listLoading"
+    <el-table v-loading="listLoading"
               :data="list"
-              :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-              :default-expand-all="false"
-              :load="loadTree"
-              row-key="id"
-              lazy
               stripe
               fit
               highlight-current-row>
-      <el-table-column label="资源名称"
-                       align="left">
-        <template slot-scope="scope">
-          <span class="link-type"
-                @click="handleUpdate(scope.row)">{{ scope.row.title }}</span>
-          <el-tag>{{ scope.row.name }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="访问资源"
+      <el-table-column label="号段"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
-          <el-tag>{{ scope.row.resourceUrl }}</el-tag>
+          <el-tag>{{ scope.row.bizTag }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="资源类型"
+      <el-table-column label="号段说明"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.bizType | bizTypeFilter">{{ scope.row.bizTypeName }}</el-tag>
+          <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间"
+      <el-table-column label="maxId"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.gmtModifiedDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+          <el-tag>{{ scope.row.maxId }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="step"
+                       width="200"
+                       align="center">
+        <template slot-scope="scope">
+          <el-tag>{{ scope.row.step }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作人"
+                       width="200"
                        align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.gmtModifiedName }}</span>
+          <span>{{ scope.row.author }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="更新时间"
+                       width="220"
+                       align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作"
-                       class-name="small-padding fixed-width"
-                       fixed="right"
                        width="220"
+                       fixed="right"
+                       class-name="small-padding fixed-width"
                        align="center">
         <template slot-scope="scope">
           <el-button type="primary"
                      size="small"
                      icon="el-icon-edit"
-                     @click="handleUpdate(scope.row)">编辑
-          </el-button>
-          <el-button type="danger"
-                     size="small"
-                     icon="el-icon-delete"
-                     @click="handleDelete(scope.row.id)">删除
+                     @click="handleModify(scope.row)">
+            编辑
           </el-button>
         </template>
       </el-table-column>
@@ -87,60 +89,46 @@
                 :total="total"
                 :page.sync="listQuery.page"
                 :limit.sync="listQuery.pageSize"
-                @pagination="postResource" />
+                @pagination="getSegmentList" />
     <i-form ref="dataForm"
             :form-data="formData" />
   </div>
 </template>
 
 <script>
-import { postResourcePage, postResourceList, deleteResource } from '@/api/resource'
-import waves from '@/directive/waves'
+import { postSegment } from '@/api/segment'
+import waves from '@/directive/waves' // Waves directive
 import permission from '@/directive/permission'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import IForm from './form'
 
 export default {
+  name: 'UserManage',
   components: { Pagination, IForm },
   directives: { waves, permission },
-  filters: {
-    bizTypeFilter (status) {
-      const statusMap = {
-        0: 'success',
-        1: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
   data () {
     return {
-      tableKey: 0,
       list: null,
       total: 0,
       listLoading: true,
+      loading: false,
       listQuery: {
         page: 1,
         pageSize: 10,
-        parentId: 0, // 默认查询父级
-        name: undefined
+        description: undefined
       },
-      showReviewer: false,
-      formData: {
-        id: undefined,
-        name: undefined
-      },
-      permissions: [], // 系统所有权限
-      hadPermission: []
+      formData: {}
     }
   },
+  // 初始化
   created () {
-    this.postResource()
+    this.getSegmentList()
   },
   methods: {
-    // 分页列表
-    postResource () {
+    // 列表
+    getSegmentList () {
       this.listLoading = true
-      postResourcePage(this.listQuery).then(response => {
+      postSegment(this.listQuery).then(response => {
         this.list = response.data
         this.total = response.total
         this.listLoading = false
@@ -148,42 +136,26 @@ export default {
         this.listLoading = false
       })
     },
-    // 检索
+    // 查询列表
     handleFilter () {
       this.listQuery.page = 1
-      this.postResource()
-    },
-    // 懒加载树结构
-    loadTree (tree, treeNode, resolve) {
-      postResourceList({ parentId: tree.id }).then(response => {
-        resolve(response.data)
-      })
+      this.getSegmentList()
     },
     // 创建
     handleCreate () {
       const _this = this.$refs['dataForm']
       _this.dialogStatus = 'create'
+      _this.passwordVisiable = true
       _this.dialogFormVisible = true
-      _this.roleCodeDisabled = false
       this.formData = {}
     },
-    // 更新
-    handleUpdate (row) {
-      this.formData = Object.assign({}, row) // copy obj
+    // 编辑弹框
+    handleModify (row) {
+      this.formData = Object.assign({}, row)
       const _this = this.$refs['dataForm']
       _this.dialogStatus = 'update'
+      _this.passwordVisiable = false
       _this.dialogFormVisible = true
-      _this.roleCodeDisabled = true
-    },
-    // 删除
-    handleDelete (id) {
-      deleteResource({ id: id }).then(() => {
-        this.$message({
-          message: '删除成功',
-          type: 'success'
-        })
-        this.postResource()
-      })
     }
   }
 }

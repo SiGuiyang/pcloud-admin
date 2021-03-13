@@ -136,11 +136,9 @@ export default {
     getDeptList () {
       this.listLoading = true
       postDeptPage(this.listQuery).then(response => {
-        setTimeout(() => {
-          this.list = response.data
-          this.total = response.total
-          this.listLoading = false
-        }, 3 * 1000)
+        this.list = response.data
+        this.total = response.total
+        this.listLoading = false
       }).catch(() => {
         this.listLoading = false
       })

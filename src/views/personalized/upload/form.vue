@@ -103,10 +103,8 @@ export default {
         // 初始化进来文件列表为空
         this.fileList = null
         getBucket({ ossType: this.listQuery.ossType }).then(response => {
-          setTimeout(() => {
-            this.list = response.data
-            this.bucketLoading = false
-          }, 3 * 1000)
+          this.list = response.data
+          this.bucketLoading = false
         })
       })
     },
@@ -127,10 +125,8 @@ export default {
     handlerFilter () {
       this.listLoading = true
       postObjects(this.listQuery).then(response => {
-        setTimeout(() => {
-          this.fileList = response.data
-          this.listLoading = false
-        }, 3 * 1000)
+        this.fileList = response.data
+        this.listLoading = false
       })
     },
     handleCellClick (row, column, cell, event) {

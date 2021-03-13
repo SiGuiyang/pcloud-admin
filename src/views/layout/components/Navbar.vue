@@ -16,6 +16,32 @@
           <screenfull class="screenfull right-menu-item" />
         </el-tooltip>
 
+        <el-badge :value="quantity">
+          <el-popover placement="bottom"
+                      width="300"
+                      trigger="click"
+                      @show="showNotification">
+            <el-row v-for="notification in notificationList"
+                    :key="notification.id"
+                    :gutter="24">
+              <el-col :span="8">
+                <el-avatar shape="square"
+                           :size="80"
+                           fit="fill"
+                           :src="notification.avatar" />
+              </el-col>
+              <el-col :span="16">
+                <span>{{ notification.description }}</span>
+              </el-col>
+            </el-row>
+            <el-button v-if="loading"
+                       type="text"
+                       @click="handleMore">加载更多</el-button>
+            <i slot="reference"
+               class="el-icon-chat-dot-round message right-menu-item" />
+          </el-popover>
+        </el-badge>
+
         <el-tooltip content="换肤"
                     effect="dark"
                     placement="bottom">
@@ -52,17 +78,21 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+
+      <mail-form ref="mailForm" />
     </div>
   </div>
 </template>
 
 <script>
+import { getMailQuantity, postMail } from '@/api/mail'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import ThemePicker from '@/components/ThemePicker'
+import MailForm from './MailForm'
 
 export default {
   components: {
@@ -70,15 +100,34 @@ export default {
     Hamburger,
     ErrorLog,
     Screenfull,
-    ThemePicker
+    ThemePicker,
+    MailForm
+  },
+  data () {
+    return {
+      loading: false,
+      quantity: undefined,
+      notificationList: null,
+      listQuery: {
+        page: 1,
+        pageSize: 6,
+        phone: undefined
+      }
+    }
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'username',
+      'phone',
       'avatar',
       'device'
     ])
+  },
+  created () {
+    this.$nextTick(() => {
+      this.notificationQuantity()
+    })
   },
   methods: {
     toggleSideBar () {
@@ -88,6 +137,23 @@ export default {
       this.$store.dispatch('LogOut').then(() => {
         location.reload()// In order to re-instantiate the vue-router object to avoid bugs
       })
+    },
+    // 未读站内信数量
+    notificationQuantity () {
+      getMailQuantity().then(response => {
+        this.quantity = response.data
+      })
+    },
+    // 通知列表
+    showNotification () {
+      postMail({ phone: this.phone, page: 1, pageSize: 6 }).then(response => {
+        this.notificationList = response.data
+        this.loading = response.total > 6
+      })
+    },
+    handleMore () {
+      const _this = this.$refs['mailForm']
+      _this.dialogFormVisible = true
     }
   }
 }
@@ -136,6 +202,9 @@ export default {
       vertical-align: top;
     }
 
+    .message {
+      vertical-align: 15px;
+    }
     .theme-switch {
       vertical-align: 15px;
     }

@@ -2,7 +2,7 @@
   <el-dialog title="执行一次"
              :visible.sync="dialogFormVisible"
              :close-on-click-modal="false"
-             width="60%"
+             width="80%"
              center>
     <el-form ref="dataForm"
              :model="formData"

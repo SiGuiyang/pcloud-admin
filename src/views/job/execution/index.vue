@@ -166,7 +166,7 @@ export default {
           this.list = response.data
           this.total = response.total
           this.listLoading = false
-        }, 3 * 1000)
+        }, 1.5 * 1000)
       }).catch(() => {
         this.listLoading = false
       })

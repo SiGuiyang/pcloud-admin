@@ -2,7 +2,7 @@
   <el-dialog title="注册节点"
              :visible.sync="dialogFormVisible"
              :close-on-click-modal="false"
-             width="60%"
+             width="80%"
              center>
     <el-table :data="list"
               stripe
