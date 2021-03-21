@@ -29,7 +29,7 @@
               highlight-current-row>
       <el-table-column label="号段"
                        width="200"
-                       align="center">
+                       align="left">
         <template slot-scope="scope">
           <el-tag>{{ scope.row.bizTag }}</el-tag>
         </template>

@@ -125,6 +125,8 @@ export default {
               type: 'success'
             })
             this.$parent.getUserList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })
@@ -144,6 +146,8 @@ export default {
               type: 'success'
             })
             this.$parent.getUserList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })

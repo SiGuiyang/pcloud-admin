@@ -108,6 +108,8 @@ export default {
               type: 'success'
             })
             this.$parent.postResource()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })
@@ -127,6 +129,8 @@ export default {
               type: 'success'
             })
             this.$parent.postResource()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })

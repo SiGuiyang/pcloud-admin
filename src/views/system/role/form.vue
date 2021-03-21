@@ -84,6 +84,8 @@ export default {
               type: 'success'
             })
             this.$parent.getRoleList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })
@@ -103,6 +105,8 @@ export default {
               type: 'success'
             })
             this.$parent.getRoleList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })

@@ -2,14 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.name"
-                clearable
-                placeholder="短信名称"
-                style="width: 200px;"
-                class="filter-item"
-                @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.code"
-                clearable
-                placeholder="短信编码"
+                placeholder="资源名称"
                 style="width: 200px;"
                 class="filter-item"
                 @keyup.enter.native="handleFilter" />
@@ -19,43 +12,33 @@
                  icon="el-icon-search"
                  @click="handleFilter">搜索
       </el-button>
-      <el-button v-waves
-                 class="filter-item"
+      <el-button class="filter-item"
                  style="margin-left: 10px;"
                  type="primary"
                  icon="el-icon-edit"
-                 @click="handleCreate">创建
+                 @click="handleCreate">新增
       </el-button>
     </div>
+
     <el-table v-loading="listLoading"
               :data="list"
+              lazy
               stripe
               fit
-              highlight-current-row
-              style="width: 100%">
-      <el-table-column label="短信名称"
-                       prop="name"
+              highlight-current-row>
+      <el-table-column label="资源名称"
                        align="left">
         <template slot-scope="scope">
-          <el-tag> {{ scope.row.name }}</el-tag>
+          <el-tag>{{ scope.row.name }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="短信编码"
-                       prop="code"
+      <el-table-column label="访问资源"
                        align="center">
         <template slot-scope="scope">
-          <el-tag> {{ scope.row.code }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="短信内容"
-                       prop="description"
-                       align="center">
-        <template slot-scope="scope">
-          <span> {{ scope.row.description }}</span>
+          <el-tag>{{ scope.row.resourceUrl }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="更新时间"
-                       width="220"
                        align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.gmtModifiedDate | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
@@ -68,20 +51,20 @@
         </template>
       </el-table-column>
       <el-table-column label="操作"
-                       prop="operation"
+                       class-name="small-padding fixed-width"
+                       fixed="right"
                        width="220"
-                       align="center"
-                       fixed="right">
+                       align="center">
         <template slot-scope="scope">
-          <el-button size="small"
-                     type="primary"
+          <el-button type="primary"
+                     size="small"
                      icon="el-icon-edit"
-                     @click="handleModify(scope.row)">编辑
+                     @click="handleUpdate(scope.row)">编辑
           </el-button>
-          <el-button size="small"
-                     type="danger"
+          <el-button type="danger"
+                     size="small"
                      icon="el-icon-delete"
-                     @click="handleDelete(scope.row)">删除
+                     @click="handleDelete(scope.row.id)">删除
           </el-button>
         </template>
       </el-table-column>
@@ -91,45 +74,57 @@
                 :total="total"
                 :page.sync="listQuery.page"
                 :limit.sync="listQuery.pageSize"
-                @pagination="getSmsList" />
+                @pagination="postResource" />
     <i-form ref="dataForm"
             :form-data="formData" />
   </div>
 </template>
 
 <script>
-import { postSmsPage, deleteSms } from '@/api/sms'
-import IForm from './form'
+import { postOpenResourcePage, deleteOpenResource } from '@/api/open'
+import waves from '@/directive/waves'
+import permission from '@/directive/permission'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import waves from '@/directive/waves' // Waves directive
+import IForm from './form'
+
 export default {
-  directives: { waves },
   components: { Pagination, IForm },
+  directives: { waves, permission },
+  filters: {
+    bizTypeFilter (status) {
+      const statusMap = {
+        0: 'success',
+        1: 'danger'
+      }
+      return statusMap[status]
+    }
+  },
   data () {
     return {
-      list: [],
+      list: null,
       total: 0,
-      listLoading: false,
+      listLoading: true,
       listQuery: {
         page: 1,
         pageSize: 10,
-        name: undefined,
-        code: undefined
+        parentId: 0, // 默认查询父级
+        name: undefined
       },
-      formData: {}
+      showReviewer: false,
+      formData: {
+        id: undefined,
+        name: undefined
+      }
     }
   },
   created () {
-    this.getSmsList()
+    this.postResource()
   },
   methods: {
-    handleFilter () {
-      this.listQuery.page = 1
-      this.getSmsList()
-    },
-    getSmsList () {
+    // 分页列表
+    postResource () {
       this.listLoading = true
-      postSmsPage(this.listQuery).then(response => {
+      postOpenResourcePage(this.listQuery).then(response => {
         this.list = response.data
         this.total = response.total
         this.listLoading = false
@@ -137,36 +132,35 @@ export default {
         this.listLoading = false
       })
     },
+    // 检索
+    handleFilter () {
+      this.listQuery.page = 1
+      this.postResource()
+    },
+    // 创建
     handleCreate () {
       const _this = this.$refs['dataForm']
       _this.dialogStatus = 'create'
       _this.dialogFormVisible = true
+      _this.roleCodeDisabled = false
       this.formData = {}
     },
-    handleModify (row) {
+    // 更新
+    handleUpdate (row) {
       this.formData = Object.assign({}, row) // copy obj
       const _this = this.$refs['dataForm']
       _this.dialogStatus = 'update'
       _this.dialogFormVisible = true
+      _this.roleCodeDisabled = true
     },
-    handleDelete (row) {
-      this.$confirm('是否删除?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        deleteSms({ id: row.id }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功'
-          })
-          this.getSmsList()
-        })
-      }).catch(() => {
+    // 删除
+    handleDelete (id) {
+      deleteOpenResource({ id: id }).then(() => {
         this.$message({
-          type: 'info',
-          message: '已取消删除'
+          message: '删除成功',
+          type: 'success'
         })
+        this.postResource()
       })
     }
   }

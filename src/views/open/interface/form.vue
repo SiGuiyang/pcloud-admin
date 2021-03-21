@@ -11,9 +11,14 @@
              label-position="top"
              label-width="100px"
              width="50%">
-      <el-form-item label="职级名称"
+      <el-form-item label="资源名称"
                     prop="name">
         <el-input v-model="formData.name"
+                  placeholder="请设置" />
+      </el-form-item>
+      <el-form-item label="访问资源"
+                    prop="resourceUrl">
+        <el-input v-model="formData.resourceUrl"
                   placeholder="请设置" />
       </el-form-item>
     </el-form>
@@ -30,7 +35,8 @@
 </template>
 
 <script>
-import { postGradeCreate, putGradeModify } from '@/api/grade'
+import { addOpenResource, modifyOpenResource } from '@/api/open'
+
 export default {
   name: 'Form',
   props: {
@@ -44,17 +50,19 @@ export default {
       dialogFormVisible: false,
       confirmLoading: false,
       dialogStatus: '',
+      resourceOptions: [],
       textMap: {
         update: '编辑',
         create: '新建'
       },
       rules: {
-        name: [{ required: true, message: '职级名称不能为空', trigger: 'blur' }]
-      },
-      deptOption: []
+        name: [{ required: true, message: '资源名称不能为空', trigger: 'blur' }],
+        resourceUrl: [{ required: true, message: '访问不能为空', trigger: 'blur' }]
+      }
     }
   },
   methods: {
+    // 弹框初始化
     handleOpen () {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -67,14 +75,14 @@ export default {
           this.confirmLoading = true
           this.formData.gmtCreatedName = this.$store.state.user.username
           this.formData.gmtModifiedName = this.$store.state.user.username
-          postGradeCreate(this.formData).then(() => {
-            this.dialogFormVisible = false
+          addOpenResource(this.formData).then(() => {
             this.confirmLoading = false
+            this.dialogFormVisible = false
             this.$message({
               message: '创建成功',
               type: 'success'
             })
-            this.$parent.getGradeList()
+            this.$parent.postResource()
           }).catch(() => {
             this.confirmLoading = false
           })
@@ -88,14 +96,14 @@ export default {
           this.confirmLoading = true
           const tempData = Object.assign({}, this.formData)
           tempData.gmtModifiedName = this.$store.state.user.username
-          putGradeModify(tempData).then(() => {
+          modifyOpenResource(tempData).then(() => {
             this.dialogFormVisible = false
             this.confirmLoading = false
             this.$message({
               message: '更新成功',
               type: 'success'
             })
-            this.$parent.getGradeList()
+            this.$parent.postResource()
           }).catch(() => {
             this.confirmLoading = false
           })

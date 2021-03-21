@@ -113,6 +113,8 @@ export default {
               type: 'success'
             })
             this.$parent.getSegmentList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })
@@ -131,6 +133,8 @@ export default {
               type: 'success'
             })
             this.$parent.getSegmentList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })

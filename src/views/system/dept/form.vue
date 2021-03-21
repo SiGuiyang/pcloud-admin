@@ -127,6 +127,8 @@ export default {
               type: 'success'
             })
             this.$parent.getDeptList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })
@@ -146,6 +148,8 @@ export default {
               type: 'success'
             })
             this.$parent.getDeptList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })

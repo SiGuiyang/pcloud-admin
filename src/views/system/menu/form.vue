@@ -181,6 +181,8 @@ export default {
               type: 'success'
             })
             this.$parent.getList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })
@@ -199,6 +201,8 @@ export default {
               type: 'success'
             })
             this.$parent.getList()
+          }).catch(() => {
+            this.confirmLoading = false
           })
         }
       })
