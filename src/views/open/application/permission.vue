@@ -8,6 +8,7 @@
     <div class="app-container">
       <div class="filter-container">
         <el-input v-model="listQuery.name"
+                  clearable
                   placeholder="资源名称"
                   style="width: 200px;"
                   class="filter-item"
@@ -19,7 +20,7 @@
                    @click="handleFilter">搜索
         </el-button>
         <el-button v-waves
-                   v-loading="confirmLoading"
+                   :loading="confirmLoading"
                    class="filter-item"
                    type="success"
                    icon="el-icon-check"
@@ -118,17 +119,17 @@ export default {
       this.listLoading = true
       postOpenPermission(this.listQuery).then(response => {
         this.list = response.data
+        this.total = response.total
+        this.listLoading = false
         if (this.list) {
           this.list.forEach(row => {
             if (row.permission) {
-              console.log(row.permission)
-              console.log(row)
-              this.$refs.multipleTable.toggleRowSelection(row)
+              this.$nextTick(() => {
+                this.$refs.multipleTable.toggleRowSelection(row, true)
+              })
             }
           })
         }
-        this.total = response.total
-        this.listLoading = false
       }).catch(() => {
         this.listLoading = false
       })
@@ -140,6 +141,7 @@ export default {
     },
     // 角色授权
     handleGrant () {
+      this.confirmLoading = true
       postOpenGrant({ accountId: this.listQuery.accountId, resourceIds: this.multipleSelection.map(item => item.id) }).then(() => {
         this.confirmLoading = false
         this.$message({
