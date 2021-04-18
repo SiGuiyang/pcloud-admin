@@ -9,15 +9,6 @@ export function downloadFile (data) {
   })
 }
 
-// 上床文件
-export function uploadFile (data) {
-  return service({
-    url: '/admin/upload',
-    method: 'post',
-    data
-  })
-}
-
 // 获取通用枚举服务
 export function fetchCommonEnumInfo (data) {
   return service({

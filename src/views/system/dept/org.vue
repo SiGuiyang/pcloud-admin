@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { postDeptOrg } from '@/api/dept'
+import { getDeptOrg } from '@/api/dept'
 export default {
   name: 'Org',
   data () {
@@ -23,7 +23,7 @@ export default {
     handleOpen () {
       this.$nextTick(() => {
         // 部门树
-        postDeptOrg({}).then(response => {
+        getDeptOrg({}).then(response => {
           this.orgs = response.data
         })
       })

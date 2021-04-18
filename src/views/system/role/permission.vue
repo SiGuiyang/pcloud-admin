@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { grantAuthorization, postRolePermission } from '@/api/role'
+import { grantAuthorization, getRolePermission } from '@/api/role'
 
 export default {
   name: 'IPermission',
@@ -69,7 +69,7 @@ export default {
     },
     initPermission (roleId) {
       // 获取菜单列表
-      postRolePermission({ roleId: roleId }).then(response => {
+      getRolePermission({ roleId: roleId }).then(response => {
         this.routers = response.data.routers
         this.hasRouters = response.data.hasRouters
         this.resources = response.data.resources

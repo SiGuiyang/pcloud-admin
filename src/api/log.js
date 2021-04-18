@@ -3,7 +3,7 @@ import service from '@/utils/request'
 // table list
 export function fetchLogList (data) {
   return service({
-    url: '/log/admin/action/page',
+    url: '/admin/log/action/page',
     method: 'post',
     data
   })
@@ -15,7 +15,7 @@ export function fetchLogList (data) {
  */
 export function postStatistics (data) {
   return service({
-    url: '/log/admin/action/statistics',
+    url: '/admin/log/action/statistics',
     method: 'post',
     data
   })

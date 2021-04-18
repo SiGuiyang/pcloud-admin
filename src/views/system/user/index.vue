@@ -9,6 +9,7 @@
                 @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.roleIds"
                  filterable
+                 multiple
                  remote
                  reserve-keyword
                  clearable

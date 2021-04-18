@@ -3,9 +3,8 @@ import service from '@/utils/request'
 // 下载文件
 export function downloadFile (data) {
   return service({
-    url: '/oss/download',
+    url: `/oss/download/${data.ossKey}/${data.fileName}/${data.ossType}`,
     method: 'get',
-    params: data,
     responseType: 'blob'
   })
 }
@@ -16,9 +15,8 @@ export function downloadFile (data) {
  */
 export function getBucket (data) {
   return service({
-    url: '/oss/cloud/bucket',
-    method: 'get',
-    params: data
+    url: `/oss/cloud/bucket/${data.ossType}`,
+    method: 'get'
   })
 }
 

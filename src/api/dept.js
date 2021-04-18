@@ -54,10 +54,9 @@ export function postDeptTree (data) {
 }
 
 // 获取部门架构
-export function postDeptOrg (data) {
+export function getDeptOrg (data) {
   return service({
     url: '/admin/dept/org',
-    method: 'post',
-    data
+    method: 'get'
   })
 }

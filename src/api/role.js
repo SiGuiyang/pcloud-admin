@@ -55,11 +55,10 @@ export function getRoleRefresh () {
 }
 
 // 查看某个系统角色所具有的权限
-export function postRolePermission (data) {
+export function getRolePermission (data) {
   return service({
     url: `/admin/role/${data.roleId}/menu`,
-    method: 'post',
-    data
+    method: 'get'
   })
 }
 
