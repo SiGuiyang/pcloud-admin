@@ -70,7 +70,7 @@ export function postjobinfoNextTriggerTime (data) {
 export function postJobRemove (data) {
   return service({
     url: `/job/jobinfo/${data.id}/remove`,
-    method: 'post'
+    method: 'delete'
   })
 }
 
@@ -81,7 +81,7 @@ export function postJobRemove (data) {
 export function postJobStop (data) {
   return service({
     url: `/job/jobinfo/${data.id}/stop`,
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -92,7 +92,7 @@ export function postJobStop (data) {
 export function postJobStart (data) {
   return service({
     url: `/job/jobinfo/${data.id}/start`,
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -126,9 +126,8 @@ export function postJoblogPageList (data) {
  */
 export function getJobsByGroup (data) {
   return service({
-    url: '/job/joblog/getJobsByGroup',
-    method: 'get',
-    params: data
+    url: `/job/joblog/${data.jobGroup}/getJobsByGroup`,
+    method: 'get'
   })
 }
 
@@ -151,7 +150,7 @@ export function postJoblogClearLog (data) {
 export function postJobgroupFindAll (data) {
   return service({
     url: '/job/jobgroup/findAll',
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -198,7 +197,7 @@ export function postJobgroupUpdate (data) {
 export function postJobGroupDelete (data) {
   return service({
     url: `/job/jobgroup/${data.id}/remove`,
-    method: 'post'
+    method: 'delete'
   })
 }
 
@@ -209,6 +208,6 @@ export function postJobGroupDelete (data) {
 export function postJobgroupLoadById (data) {
   return service({
     url: `/job/jobgroup/${data.id}/loadById`,
-    method: 'post'
+    method: 'get'
   })
 }
